@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+   docker-go:
+      image: golang:1.16
+      command: sh -c "go run main.go"
+      ports:
+         - 8080:8080
+      working_dir: /go/src
+      volumes:
+         - ./:/go/src
+      environment:
+         DB_HOST: mysql
+         DB_USERNAME: root
+         DB_PASSWORD: secret
+         DB_NAME: docker-go
+      depends_on: 
+         - mysql
+   mysql:
+      image: mysql:5.7
+      volumes:
+         - docker-go-mysql-data:/var/lib/mysql
+      environment:
+         MYSQL_ROOT_PASSWORD: secret
+         MYSQL_DATABASE: docker-go
+
+volumes:
+   docker-go-mysql-data:
