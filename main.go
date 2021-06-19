@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -18,15 +16,9 @@ type Product struct {
 	Price uint
 }
 
-func init() {
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
 func main() {
+
+	fmt.Println("Environment: ", os.Getenv("ENVIRONMENT"))
 	
 	r := gin.Default()
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:3306)/%v?charset=utf8mb4&parseTime=True&loc=Local", 
@@ -42,7 +34,7 @@ func main() {
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
 	// Create
-	db.Create(&Product{Code: "D42", Price: 100})
+	db.Create(&Product{Code: "D421111", Price: 100})
 
 	r.GET("/products", func (c *gin.Context)  {
 		var products []Product
