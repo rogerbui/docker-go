@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )
 
@@ -21,20 +21,20 @@ func main() {
 	fmt.Println("Environment: ", os.Getenv("ENVIRONMENT"))
 	
 	r := gin.Default()
-	dsn := fmt.Sprintf("%v:%v@tcp(%v:3306)/%v?charset=utf8mb4&parseTime=True&loc=Local", 
+	dsn := fmt.Sprintf("sqlserver://%v:%v@%v:1433", 
 		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_NAME"))
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		os.Getenv("DB_HOST"))
+	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
+	db.Exec(fmt.Sprintf("CREATE DATABASE %v", os.Getenv("DB_NAME")))
+	db.Exec(fmt.Sprintf("USE %v", os.Getenv("DB_NAME")))
+
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
-	// Create
-	db.Create(&Product{Code: "D421111", Price: 100})
 
 	r.GET("/products", func (c *gin.Context)  {
 		var products []Product

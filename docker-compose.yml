@@ -1,28 +1,30 @@
 version: "3.7"
 services:
-   docker-go:
-      image: docker-go
-      ports:
-         - 8080:8080
-      volumes:
-         - ./:/go/src
-      environment:
-         DB_HOST: mysql
-         DB_USERNAME: root
-         DB_PASSWORD: secret
-         DB_NAME: docker-go
-         ENVIRONMENT: development
-      depends_on: 
-         - mysql
-   mysql:
-      image: mysql:5.7
-      volumes:
-         - docker-go-mysql-data:/var/lib/mysql
-      ports: 
-         - 3306:3306
-      environment:
-         MYSQL_ROOT_PASSWORD: secret
-         MYSQL_DATABASE: docker-go
+  docker-go:
+    image: docker-go
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/go/src
+    restart: always
+    environment:
+      DB_HOST: mssql
+      DB_USERNAME: sa
+      DB_PASSWORD: Secret123
+      DB_NAME: DockerGo
+      ENVIRONMENT: development
+    depends_on:
+      - mssql
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    volumes:
+      - docker-go-mssql-data:/var/opt/mssql/data
+    ports:
+      - 14331:1433
+    restart: always
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Secret123
 
 volumes:
-   docker-go-mysql-data:
+  docker-go-mssql-data:
