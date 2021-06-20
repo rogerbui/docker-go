@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+   docker-go:
+      build: .
+      ports:
+         - 8080:8080
+      volumes:
+         - ./:/go/src
+      restart: always
+      environment:
+         DB_HOST: ${DB_HOST:-mssql}
+         DB_USERNAME: ${DB_USERNAME:-sa}
+         DB_PASSWORD: ${DB_PASSWORD:?database db not set}
+         DB_NAME: ${DB_NAME:-DockerGo}
+         ENVIRONMENT: ${ENVIRONMENT:-development}
+      depends_on: 
+         - mssql
+   mssql:
+      image: mcr.microsoft.com/mssql/server
+      volumes:
+         - docker-go-mssql-data:/var/opt/mssql/data
+      ports: 
+         - 14331:1433
+      volumes:
+         - ./:/app
+      restart: always
+      environment:
+         ACCEPT_EULA: Y
+         SA_PASSWORD: ${DB_PASSWORD:?database db not set}
+         
+volumes:
+   docker-go-mssql-data:
